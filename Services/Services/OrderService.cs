@@ -36,7 +36,7 @@ namespace Services.Services
             var userId = checkOrderExist.AccountID;
             var ordersResult = await _unitOfWork.OrderRepository.GetAllAsync(
                filter: _ => _.AccountID == userId,
-               include: "OrderCartItems",
+               include: "OrderCartItems.ProductSize.Product.ProductImages, OrderCartItems.ProductSize.Size",
                pageIndex: orderFilterModel.PageIndex,
                pageSize: orderFilterModel.PageSize
            );
@@ -55,6 +55,9 @@ namespace Services.Services
                     OrderCartItemModels = _.OrderCartItems.Select(_ => new OrderCartItemModel
                     {
                         ProductSizeID = _.ProductSizeID,
+                        SizeName = _.ProductSize.Size.Name,
+                        ProductName = _.ProductSize.Product.ProductName,
+                        ImageUrl = _.ProductSize.Product.ProductImages.Select(_ => _.ImgUrl).FirstOrDefault(),
                         Quantity = _.Quantity,
                         Price = _.Price,
                         OrderStatus = (int)_.OrderStatus
