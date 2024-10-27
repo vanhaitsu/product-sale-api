@@ -49,7 +49,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 });
 
 // Deploy Database
-//var connection = String.Empty;
+var connection = String.Empty;
 //if (builder.Environment.IsDevelopment())
 //{
 //    builder.Configuration.AddEnvironmentVariables().AddJsonFile("appsettings.Development.json");

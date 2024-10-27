@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Services.Interfaces;
+using Services.Models.NotificationModels;
 using System.Text;
 
 namespace Services.Services
@@ -19,7 +20,7 @@ namespace Services.Services
             _oneSignalRestApiKey = configuration["OneSignal:RestApiKey"];
         }
 
-        public async Task<bool> SendNotificationAsync(string heading, string content, string playerId)
+        public async Task<bool> SendNotificationAsync(OneSignalNotificationModel oneSignalNotificationModel)
         {
             var requestUri = "https://onesignal.com/api/v1/notifications";
 
@@ -27,9 +28,9 @@ namespace Services.Services
             var payload = new
             {
                 app_id = _oneSignalAppId,
-                headings = new { en = heading },
-                contents = new { en = content },
-                include_player_ids = new[] { playerId } // Target specific users by their OneSignal player ID
+                headings = new { en = oneSignalNotificationModel.Heading },
+                contents = new { en = oneSignalNotificationModel.Content },
+                include_player_ids = oneSignalNotificationModel.PlayerIds // Target specific users by their OneSignal player ID
             };
 
             var jsonPayload = JsonConvert.SerializeObject(payload);
