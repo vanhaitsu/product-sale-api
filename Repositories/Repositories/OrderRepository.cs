@@ -28,5 +28,11 @@ namespace Repositories.Repositories
 
             return checkBuy != null;
         }
+
+        public async Task<Order> GetOrderByAccount(Guid accountId)
+        {
+           var checkOrder = await _dbContext.Orders.Include(_ => _.OrderCartItems).Where(_ => _.AccountID == accountId).FirstOrDefaultAsync();
+            return checkOrder;
+        }
     }
 }

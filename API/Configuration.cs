@@ -69,6 +69,7 @@ namespace API
 
             //Order
             services.AddScoped<IOrderRepository, OrderRepository>();
+            services.AddScoped<IOrderService, OrderService>();
 
             //Notification
             services.AddScoped<IOneSignalPushNotificationService, OneSignalPushNotificationService>();
@@ -92,6 +93,7 @@ namespace API
             //FeedBack
             services.AddScoped<IFeedBackRepository, FeedBackRepository>();
             services.AddScoped<IFeedBackService, FeedBackService>();
+
 
             return services;
         }
