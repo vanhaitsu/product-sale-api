@@ -7,6 +7,7 @@ using Repositories.Models.OrderModels;
 using Repositories.Models.PaymentModels;
 using Repositories.Models.VNPayModels;
 using Services.Interfaces;
+using Services.Models.OrderModels;
 using Services.Models.ResponseModels;
 
 namespace Services.Services
@@ -143,6 +144,35 @@ namespace Services.Services
                     Amount = orderModel.OrderCartItemModels.Sum(_ => _.Quantity * _.PricePerItem),
                 }
             };
+        }
+
+        public async Task<ResponseModel> UpdateOrderStatus(UpdateOrderStatusModel updateOrderStatusModel)
+        {
+            var order = await _unitOfWork.OrderRepository.GetAsync(updateOrderStatusModel.OrderId, "Payment");
+            if (order == null)
+            {
+                return new ResponseModel { Message = "Not found order!", Status = false };
+            }
+            else
+            {
+                if (updateOrderStatusModel.VnPayResponseCode == "00")
+                {
+                    order.Status = OrderStatus.Success;
+                    _unitOfWork.OrderRepository.Update(order);
+                    var payment = order.Payment;
+                    payment.PaymentStatus = PaymentStatus.Completed;
+                    _unitOfWork.PaymentRepository.Update(payment);
+                    var rs = await _unitOfWork.SaveChangeAsync();
+                    if (rs > 0)
+                    {
+                        return new ResponseModel { Message = "Successfully", Status = true };
+                    }
+                    return new ResponseModel { Message = "Fail", Status = false };
+
+                }
+            }
+            return new ResponseModel { Message = "Error!", Status = false };
+
         }
     }
 }
