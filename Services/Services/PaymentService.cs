@@ -150,7 +150,7 @@ namespace Services.Services
 
         public async Task<ResponseModel> UpdateOrderStatus(UpdateOrderStatusModel updateOrderStatusModel)
         {
-            var order = await _unitOfWork.OrderRepository.GetAsync(updateOrderStatusModel.OrderId, "Payment, OrderCartItems");
+            var order = await _unitOfWork.OrderRepository.GetAsync(updateOrderStatusModel.OrderId, "Payment, OrderCartItems.ProductSize");
             if (order == null)
             {
                 return new ResponseModel { Message = "Not found order!", Status = false };
@@ -166,7 +166,7 @@ namespace Services.Services
                     _unitOfWork.PaymentRepository.Update(payment);
                     decimal totalPriceAfter = 0;
                     var accountId = order.AccountID;
-                    var listProductsOfThisOrder = order.OrderCartItems.Where(_ => _.OrderID == order.Id).Select(_ => _.ProductSize).ToList();  
+                    var listProductsOfThisOrder = order.OrderCartItems.Select(_ => _.ProductSize).ToList();  
                     var cartOfAccount = await _unitOfWork.CartRepository.GetByAccount(accountId);
                     var listProductsOfCartAccount = cartOfAccount.CartItems.ToList();
                     foreach( var product in listProductsOfCartAccount )
@@ -175,7 +175,8 @@ namespace Services.Services
                         {
                             var itemTotal = product.Quantity * product.Price;
                             totalPriceAfter += itemTotal;
-                            _unitOfWork.CartItemRepository.SoftDelete(product);
+                            _unitOfWork.CartItemRepository.HardDelete(product);
+
                         }
                     }
                     cartOfAccount.TotalPrice -= totalPriceAfter;
