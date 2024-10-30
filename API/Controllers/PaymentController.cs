@@ -41,7 +41,7 @@ namespace API.Controllers
             }
         }
 
-        [HttpGet("redirect")]
+        [HttpGet("redirect/{vnp_TxnRef}")]
         public IActionResult RedirectWithUpdatedQuery(
             [FromQuery] string vnp_Amount,
             [FromQuery] string vnp_BankCode,
