@@ -9,8 +9,7 @@ namespace Repositories.Enums
     public enum OrderStatus
     {
         Processing,
-        Shipped,
-        Delivered,
+        Success,
         Cancelled
     }
 }

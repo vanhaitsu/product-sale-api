@@ -7,7 +7,10 @@ using Repositories.Models.OrderModels;
 using Repositories.Models.PaymentModels;
 using Repositories.Models.VNPayModels;
 using Services.Interfaces;
+using Services.Models.OrderModels;
 using Services.Models.ResponseModels;
+using System.Linq;
+using System.Net.WebSockets;
 
 namespace Services.Services
 {
@@ -143,6 +146,51 @@ namespace Services.Services
                     Amount = orderModel.OrderCartItemModels.Sum(_ => _.Quantity * _.PricePerItem),
                 }
             };
+        }
+
+        public async Task<ResponseModel> UpdateOrderStatus(UpdateOrderStatusModel updateOrderStatusModel)
+        {
+            var order = await _unitOfWork.OrderRepository.GetAsync(updateOrderStatusModel.OrderId, "Payment, OrderCartItems");
+            if (order == null)
+            {
+                return new ResponseModel { Message = "Not found order!", Status = false };
+            }
+            else
+            {
+                if (updateOrderStatusModel.VnPayResponseCode == "00")
+                {
+                    order.Status = OrderStatus.Success;
+                    _unitOfWork.OrderRepository.Update(order);
+                    var payment = order.Payment;
+                    payment.PaymentStatus = PaymentStatus.Completed;
+                    _unitOfWork.PaymentRepository.Update(payment);
+                    decimal totalPriceAfter = 0;
+                    var accountId = order.AccountID;
+                    var listProductsOfThisOrder = order.OrderCartItems.Where(_ => _.OrderID == order.Id).Select(_ => _.ProductSize).ToList();  
+                    var cartOfAccount = await _unitOfWork.CartRepository.GetByAccount(accountId);
+                    var listProductsOfCartAccount = cartOfAccount.CartItems.ToList();
+                    foreach( var product in listProductsOfCartAccount )
+                    {
+                        if (listProductsOfThisOrder.Any(_ => _.Id == product.ProductSize.Id))
+                        {
+                            var itemTotal = product.Quantity * product.Price;
+                            totalPriceAfter += itemTotal;
+                            _unitOfWork.CartItemRepository.SoftDelete(product);
+                        }
+                    }
+                    cartOfAccount.TotalPrice -= totalPriceAfter;
+                    _unitOfWork.CartRepository.Update(cartOfAccount);
+                    var rs = await _unitOfWork.SaveChangeAsync();
+                    if (rs > 0)
+                    {
+                        return new ResponseModel { Message = "Successfully", Status = true };
+                    }
+                    return new ResponseModel { Message = "Fail", Status = false };
+
+                }
+            }
+            return new ResponseModel { Message = "Error!", Status = false };
+
         }
     }
 }

@@ -88,7 +88,7 @@ namespace Services.Services
         private async Task SendVerificationEmail(Account account)
         {
             await _emailService.SendEmailAsync(account.Email!, "Verify your email",
-                $"Your verification code is {account.VerificationCode}. The code will expire in 15 minutes.", true);
+                GenerateEmailBody(account?.FirstName, account?.VerificationCode), true);
         }
         private string GenerateEmailBody(string fullName, string otp)
         {
@@ -124,11 +124,6 @@ namespace Services.Services
         </h1>
 
         <div style=""text-align: center"">
-          <img
-            src=""https://img.freepik.com/free-vector/students-bus-transportation_24877-83765.jpg?size=338&ext=jpg&ga=GA1.1.553209589.1715040000&semt=ais""
-            alt=""logo""
-            width=""70""
-          />
         </div>
 
         <p style=""text-align: center; font-weight: bold; margin-top: 0"">
@@ -147,7 +142,7 @@ namespace Services.Services
         >
           <p>
             Xin chào,
-            <span style=""font-weight: bold; color: #0d1226"">{fullName}</span>
+            <span style=""font-weight: bold; color: #0d1226"">{fullName ?? "Người dùng"}</span>
           </p>
           <p>
             <span style=""font-weight: bold"">THE PRODUCT SALE </span>would like to inform you that your account has been successfully registered.<span></span>

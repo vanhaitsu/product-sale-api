@@ -23,7 +23,7 @@ namespace Repositories.Repositories
             var checkBuy = await _dbContext.OrderCartItems
                                            .Include(_ => _.ProductSize)
                                            .Include(_ => _.Order.Payment)
-                                           .Where(_ => _.ProductSize.ProductID == productId && _.Order.AccountID == accountId && _.OrderStatus == Enums.OrderStatus.Shipped && _.Order.Payment.PaymentStatus == Enums.PaymentStatus.Completed)
+                                           .Where(_ => _.ProductSize.ProductID == productId && _.Order.AccountID == accountId && _.OrderStatus == Enums.OrderStatus.Success && _.Order.Payment.PaymentStatus == Enums.PaymentStatus.Completed)
                                            .FirstOrDefaultAsync();
 
             return checkBuy != null;
