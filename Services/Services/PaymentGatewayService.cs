@@ -27,19 +27,19 @@ namespace Services.Services
             var pay = new VNPayLibrary();
             var urlCallBack = $"{_configuration["Vnpay:ReturnUrl"]}/{requestDto.BookingID}";
 
-            pay.AddRequestData("vnp_Version", _configuration["Vnpay:Version"]);
-            pay.AddRequestData("vnp_Command", _configuration["Vnpay:Command"]);
-            pay.AddRequestData("vnp_TmnCode", _configuration["Vnpay:TmnCode"]);
-            pay.AddRequestData("vnp_Amount", ((int)requestDto.Amount * 100).ToString());
-            pay.AddRequestData("vnp_CreateDate", timeNow.ToString("yyyyMMddHHmmss"));
-            pay.AddRequestData("vnp_CurrCode", _configuration["Vnpay:CurrCode"]);
-            pay.AddRequestData("vnp_IpAddr", pay.GetIpAddress(httpContext));
-            pay.AddRequestData("vnp_Locale", _configuration["Vnpay:Locale"]);
-            pay.AddRequestData("vnp_OrderInfo",
+            pay.AddRequestData("vnpVersion", _configuration["Vnpay:Version"]);
+            pay.AddRequestData("vnpCommand", _configuration["Vnpay:Command"]);
+            pay.AddRequestData("vnpTmnCode", _configuration["Vnpay:TmnCode"]);
+            pay.AddRequestData("vnpAmount", ((int)requestDto.Amount * 100).ToString());
+            pay.AddRequestData("vnpCreateDate", timeNow.ToString("yyyyMMddHHmmss"));
+            pay.AddRequestData("vnpCurrCode", _configuration["Vnpay:CurrCode"]);
+            pay.AddRequestData("vnpIpAddr", pay.GetIpAddress(httpContext));
+            pay.AddRequestData("vnpLocale", _configuration["Vnpay:Locale"]);
+            pay.AddRequestData("vnpOrderInfo",
                 $"Khach hang: {requestDto.CustomerName} thanh toan hoa don {requestDto.BookingID}");
-            pay.AddRequestData("vnp_OrderType", "other");
-            pay.AddRequestData("vnp_ReturnUrl", urlCallBack);
-            pay.AddRequestData("vnp_TxnRef", requestDto.BookingID);
+            pay.AddRequestData("vnpOrderType", "other");
+            pay.AddRequestData("vnpReturnUrl", urlCallBack);
+            pay.AddRequestData("vnpTxnRef", requestDto.BookingID);
             paymentUrl = pay.CreateRequestUrl(_configuration["Vnpay:BaseUrl"], _configuration["Vnpay:HashSecret"]);
 
 
