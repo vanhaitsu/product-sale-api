@@ -82,6 +82,7 @@ namespace Services.Services
                     Id = _.Id,
                     ProductID = _.ProductID,    
                     AccountID = _.AccountID,
+                    AccountName = _.Account.FirstName + " " + _.Account.LastName,
                     Description = _.Description,
                     Rating = _.Rating
                 }).ToList();
